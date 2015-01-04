@@ -1,16 +1,19 @@
 function [cellT] = LKregister(imgs)
-    cellT = cell(1);
+    cellT = cell(1); %init
+    pyrs = cell(1); %init
+    levels = 1;
+    minDim = min([size(imgs, 1), size(imgs, 2)]);
+    while floor(minDim/2) >= 30
+        minDim = minDim / 2;
+        levels = levels + 1;
+    end
+    for i = 1:size(imgs, 4)
+        img = rgb2gray(imgs(:, :, :, i));
+        pyrs{i} = GaussianPyramid(img, levels, 3);
+    end
     for i = 1:size(imgs, 4) - 1
-        img1 = rgb2gray(imgs(:, :, :, i));
-        img2 = rgb2gray(imgs(:, :, :, i + 1));
-        minDim = min(size(img1));
-        levels = 1;
-        while floor(minDim/2) >= 30
-            minDim = minDim / 2;
-            levels = levels + 1;
-        end
-        gp1 = GaussianPyramid(img1, levels, 3);
-        gp2 = GaussianPyramid(img2, levels, 3);
+        gp1 = pyrs{i};
+        gp2 = pyrs{i+1};
         guess = [0, 0];
         
 %         levels = 2;
